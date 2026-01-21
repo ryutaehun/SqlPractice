@@ -30,3 +30,6 @@
 - [SQL 조회(SELECT) 및 인덱스 실습 문제 - 문제편](docs/SQL_PRACTICE_QUESTIONS.md): 총 110문항
 - [SQL 조회(SELECT) 및 인덱스 실습 문제 - 정답편](docs/SQL_PRACTICE_ANSWERS.md)
 - [SQL CRUD(데이터 조작) 실습 문제 - 정답편](docs/SQL_CRUD_ANSWERS.md)
+
+## 제출 방법
+- 정답을 제출할 때는 `feature/${학번}` 브랜치를 생성하여 제출해 주시기 바랍니다. (예: `feature/ATGG_03_100`)
