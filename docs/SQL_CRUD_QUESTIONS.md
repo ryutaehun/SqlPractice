@@ -13,31 +13,31 @@ CUD 작업은 테이블의 데이터를 변경하므로, 실습 전후에 `SELEC
 **문제 1:** `users` 테이블에서 모든 사용자의 이름(`name`)과 이메일(`email`)을 조회하세요.
 
 ```sql
-
+select name, email from users;
 ```
 
 **문제 2:** `products` 테이블에서 가격(`price`)이 100달러 이상인 상품의 모든 정보를 조회하세요.
 
 ```sql
-
+select * from products where price >= 100;
 ```
 
 **문제 3:** `reviews` 테이블에서 평점(`rating`)이 5점인 리뷰의 내용(`body`)과 작성자(`reviewer`)를 조회하세요.
 
 ```sql
-
+select body, reviewer from reviews where rating = 5;
 ```
 
 **문제 4:** `orders` 테이블에서 특정 사용자(예: `user_id` = 1)의 주문 내역을 모두 조회하세요.
 
 ```sql
-
+select * from orders where user_id = 1;
 ```
 
 **문제 5:** `products` 테이블에서 각 카테고리(`category`)별 상품 개수를 조회하세요.
 
 ```sql
-
+select count(*) as category from porducts group by category;
 ```
 
 ---
@@ -46,7 +46,8 @@ CUD 작업은 테이블의 데이터를 변경하므로, 실습 전후에 `SELEC
 
 **문제 6:** `products` 테이블에 새로운 상품을 등록하세요.
 ```sql
-
+insert into products(category,ean,price,rating,title,vendor,created_at) 
+values ('Gadget', '1234567890123', 99.99, 5.0, 'Super Smart Watch', 'NHN Academy', now());
 ```
 - 카테고리: 'Gadget'
 - EAN: '1234567890123'
@@ -58,7 +59,8 @@ CUD 작업은 테이블의 데이터를 변경하므로, 실습 전후에 `SELEC
 
 **문제 7:** `users` 테이블에 새로운 사용자를 등록하세요.
 ```sql
-
+insert into users (name, email, created_at, source, address, city, state, password)
+values ('홍길동', 'gildong@nhnacademy.com', '2023-10-01 10:00:00', 'Google', '광주광역시 동구', 'Gwangju', 'GJ', 'password123');
 ```
 - 이름: '홍길동'
 - 이메일: 'gildong@nhnacademy.com'
@@ -71,7 +73,7 @@ CUD 작업은 테이블의 데이터를 변경하므로, 실습 전후에 `SELEC
 
 **문제 8:** `reviews` 테이블에 'Super Smart Watch'(상품 ID는 방금 등록한 ID 혹은 임의의 ID)에 대한 리뷰를 등록하세요.
 ```sql
-
+insert into reviews(rating, reviewer, body, created_at) values(5, '홍길동', '정말 스마트한 시계네요! 대만족입니다.', now());
 ```
 - 평점: 5
 - 작성자: '홍길동'
@@ -80,7 +82,9 @@ CUD 작업은 테이블의 데이터를 변경하므로, 실습 전후에 `SELEC
 
 **문제 9:** `products` 테이블에 여러 상품을 한 번에 등록하세요.
 ```sql
-
+insert into products (category, ean, price, rating, title, vendor)
+values ('Widget', '9876543210987', 15.50, 4.2, 'Mini Widget', 'Widget Corp'),
+       ('Widget', '9876543210988', 12.00, 3.8, 'Small Widget', 'Widget Corp');
 ```
 - 상품 1: ('Widget', '9876543210987', 15.50, 4.2, 'Mini Widget', 'Widget Corp')
 - 상품 2: ('Widget', '9876543210988', 12.00, 3.8, 'Small Widget', 'Widget Corp')
@@ -88,7 +92,8 @@ CUD 작업은 테이블의 데이터를 변경하므로, 실습 전후에 `SELEC
 **문제 10:** `orders` 테이블에 홍길동 사용자가 'Super Smart Watch'를 2개 구매한 내역을 등록하세요. (필요한 컬럼: `user_id`, `product_id`, `quantity`, `subtotal`, `tax`, `total`, `created_at`)
 
 ```sql
-
+insert into orders (user_id, product_id, quantity, subtotal, tax, total, created_at)
+values(2503, 201, 2, 199.99, 4.01, 204.00, now());
 ```
 
 ---
@@ -98,51 +103,50 @@ CUD 작업은 테이블의 데이터를 변경하므로, 실습 전후에 `SELEC
 **문제 11:** `products` 테이블에서 'Super Smart Watch' 상품의 가격을 89.99로 인하하세요.
 
 ```sql
-
+update products set price = 89.99 where title = 'Super Smart Watch';
 ```
 
 **문제 12:** `users` 테이블에서 '홍길동' 사용자의 주소를 '서울특별시 강남구'로, 도시를 'Seoul'로, 주를 'SL'로 변경하세요.
 
 ```sql
-
+update users set address = '서울특별시 강남구', city = 'Seoul', state = 'SL';
 ```
 
 **문제 13:** `products` 테이블에서 'Widget' 카테고리의 모든 상품 수량(`quantity`)을 현재 수량에서 100개씩 추가하세요.
 
 ```sql
-
+update products set quantity = quantity + 100 where category = 'Widget';
 ```
 
 **문제 14:** `reviews` 테이블에서 평점이 1점인 모든 리뷰의 내용을 '불만족스러운 서비스입니다.'로 일괄 수정하세요.
 
 ```sql
-
+update reviews set body = '불만족스러운 서비스입니다.' where rating = 1;
 ```
 
 **문제 15:** `orders` 테이블에서 2023년 이전에 발생한 모든 주문의 할인율(`discount`)을 0.1로 설정하세요.
 
 ```sql
-
+update orders set discount = 0.1 where created_at < '2023-01-01';
 ```
 
 **문제 16:** `products` 테이블에서 평점(`rating`)이 4.0 이상인 상품들의 가격을 5% 인상하세요.
 
 ```sql
-
+update products set price = price * 1.05 where rating >= 4.0;
 ```
 
 **문제 17:** `users` 테이블에서 가입 경로(`source`)가 NULL인 사용자의 가입 경로를 'Unknown'으로 변경하세요.
 
 ```sql
-
+update users set source = 'Unknown' where source = null;
 ```
 
 **문제 18:** `reviews` 테이블에서 특정 상품(예: product_id = 1)에 달린 모든 리뷰의 평점을 1점씩 올리세요. (최대 5점을 넘지 않도록 처리해 보세요.)
 
 ```sql
-
+update reviews set rating = least(rating + 1, 5) where product_id = 1;
 ```
-
 ---
 
 ## 4. 데이터 삭제 (DELETE)
@@ -150,13 +154,13 @@ CUD 작업은 테이블의 데이터를 변경하므로, 실습 전후에 `SELEC
 **문제 19:** `reviews` 테이블에서 내용(`body`)이 비어 있는 리뷰를 모두 삭제하세요.
 
 ```sql
-
+delete from reviews where body = "";
 ```
 
 **문제 20:** `products` 테이블에서 등록한 지 5년이 넘은 상품 중 평점(`rating`)이 1.0 미만인 상품을 삭제하세요.
 
 ```sql
-
+delete from products where created_at <= now() - interval 5 and rating < 1.0;
 ```
 
 **문제 21:** `users` 테이블에서 '홍길동' 사용자의 계정을 삭제하세요. (주의: 외래 키 제약 조건이 있다면 관련 데이터 처리가 필요할 수 있습니다.)
