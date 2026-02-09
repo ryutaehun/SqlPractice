@@ -166,38 +166,38 @@ delete from products where created_at <= now() - interval 5 and rating < 1.0;
 **문제 21:** `users` 테이블에서 '홍길동' 사용자의 계정을 삭제하세요. (주의: 외래 키 제약 조건이 있다면 관련 데이터 처리가 필요할 수 있습니다.)
 
 ```sql
-
+delete from users where name = "홍길동";
 ```
 
 **문제 22:** `orders` 테이블에서 총 주문 금액(`total`)이 0원인 비정상적인 주문 데이터를 삭제하세요.
 
 ```sql
-
+delete from orders where total = 0;
 ```
 
 **문제 23:** `products` 테이블에서 재고 수량(`quantity`)이 0개인 상품을 모두 삭제하세요.
 
 ```sql
-
+delete from products where quantity = 0;
 ```
 
 **문제 24:** `reviews` 테이블에서 2020년 이전에 작성된 모든 리뷰를 삭제하세요.
 
 ```sql
-
+delete from reviews where created_at < '2020-01-01';
 ```
 
 **문제 25:** `products` 테이블에서 이름(`title`)에 'Test'가 포함된 모든 연습용 상품 데이터를 삭제하세요.
 
 ```sql
-
+delete from products where title like '%Test%';
 ```
 
 ## 5. 트랜잭션 및 복합 CRUD (Complex CRUD)
 
 **문제 26:** 새로운 사용자가 회원 가입을 하고, 상품을 주문하는 과정을 하나의 트랜잭션으로 처리하는 시나리오를 작성하세요.
 ```sql
-
+insert into users() values () 
 ```
 1. `users` 테이블에 신규 사용자 삽입
 2. 삽입된 사용자의 ID를 사용하여 `orders` 테이블에 주문 내역 삽입
