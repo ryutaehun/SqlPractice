@@ -3,5 +3,6 @@
   <component name="DataSourcePerFileMappings">
     <file url="file://$PROJECT_DIR$/resources/ddl/products.sql" value="8fac915a-ec9d-440e-9543-beb49ee874de" />
     <file url="file://$PROJECT_DIR$/resources/ddl/reviews.sql" value="8fac915a-ec9d-440e-9543-beb49ee874de" />
+    <file url="file://$PROJECT_DIR$/resources/ddl/schema.sql" value="8fac915a-ec9d-440e-9543-beb49ee874de" />
   </component>
 </project>

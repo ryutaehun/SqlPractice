@@ -197,7 +197,18 @@ delete from products where title like '%Test%';
 
 **문제 26:** 새로운 사용자가 회원 가입을 하고, 상품을 주문하는 과정을 하나의 트랜잭션으로 처리하는 시나리오를 작성하세요.
 ```sql
-insert into users() values () 
+start transaction;
+
+insert into users(created_at, name, email, address, city, state, zip, birth_date, latitude, longitude, password, source)
+values (now(), "Taehun", "fbxogns321@naver.com", "광주광역시 광산구", "Gwangju", "SL", "2001-03-16", 23414.32, 32.432452, -92.23423, "todaud0316@", "Google");
+
+insert into orders(id, created_at, user_id, product_id, discount, quantity, subtotal, tax, total)
+values (30000, now(), last_insert_id(), 14, null, 2, null, null, null);
+
+update products set quantity = quantity - 2 where id = 14;
+
+commit;
+
 ```
 1. `users` 테이블에 신규 사용자 삽입
 2. 삽입된 사용자의 ID를 사용하여 `orders` 테이블에 주문 내역 삽입
@@ -205,7 +216,7 @@ insert into users() values ()
 
 **문제 27:** 재고가 부족한 상품들을 한꺼번에 재입고 처리하세요.
 ```sql
-
+update products set quantity = 100 where quantity < 10;
 ```
 - 대상: `quantity`가 10개 미만인 모든 상품
 - 작업: 해당 상품들의 `quantity`를 100으로 업데이트
@@ -213,19 +224,26 @@ insert into users() values ()
 **문제 28:** 특정 기간 동안 리뷰가 한 번도 작성되지 않은 상품들을 비활성화(삭제 대신 카테고리를 'Discontinued'로 변경) 처리하세요.
 
 ```sql
-
+update products p set category = 'Discontinued' 
+where NOT EXISTS (select 1 from reviews r where p.product_id = r.product_id);
 ```
 
 **문제 29:** 휴면 계정 처리: 최근 1년간 주문 내역이 없는 사용자의 이름을 '휴면 계정'으로, 이메일을 'N/A'로 일괄 수정하세요.
 
 ```sql
-
+UPDATE users u
+SET u.email = 'N/A', u.name = '휴면 계정'
+WHERE (SELECT MAX(created_at) FROM reviews r WHERE r.user_id = u.user_id) < NOW() - INTERVAL 1 YEAR;
 ```
 
 **문제 30:** 중복 데이터 정제: 이메일이 중복된 사용자 중 가입일이 더 늦은 데이터를 삭제하세요.
 
 ```sql
-
+DELETE u1 
+FROM users u1
+JOIN users u2 
+ON u1.email = u2.email
+WHERE u1.created_at < u2.created_at;
 ```
 
 **문제 31:** 연쇄 삭제 시뮬레이션: 특정 사용자를 삭제할 때, 해당 사용자가 작성한 모든 리뷰를 먼저 삭제하는 쿼리를 작성하세요.
