@@ -29,7 +29,7 @@ CREATE TABLE users(
 );
 
 CREATE TABLE orders(
-                       id         BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                       id         BIGINT NOT NULL,
                        created_at DATETIME,
                        user_id    BIGINT,
                        product_id BIGINT,
