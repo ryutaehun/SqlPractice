@@ -231,79 +231,102 @@ where NOT EXISTS (select 1 from reviews r where p.product_id = r.product_id);
 **문제 29:** 휴면 계정 처리: 최근 1년간 주문 내역이 없는 사용자의 이름을 '휴면 계정'으로, 이메일을 'N/A'로 일괄 수정하세요.
 
 ```sql
-UPDATE users u
-SET u.email = 'N/A', u.name = '휴면 계정'
-WHERE (SELECT MAX(created_at) FROM reviews r WHERE r.user_id = u.user_id) < NOW() - INTERVAL 1 YEAR;
+update users u
+set u.email = 'N/A', u.name = '휴면 계정'
+where (select MAX(created_at) from reviews r where r.user_id = u.user_id) < now() - interval 1 year;
 ```
 
 **문제 30:** 중복 데이터 정제: 이메일이 중복된 사용자 중 가입일이 더 늦은 데이터를 삭제하세요.
 
 ```sql
-DELETE u1 
-FROM users u1
-JOIN users u2 
-ON u1.email = u2.email
-WHERE u1.created_at < u2.created_at;
+delete u1 
+from users u1
+join users u2 
+on u1.email = u2.email
+where u1.created_at < u2.created_at;
 ```
 
 **문제 31:** 연쇄 삭제 시뮬레이션: 특정 사용자를 삭제할 때, 해당 사용자가 작성한 모든 리뷰를 먼저 삭제하는 쿼리를 작성하세요.
 
 ```sql
-
+start transaction;
+delete from reviews where reviewer = "Taehun";
+delete from users where name = "Taehun";
+commit;
 ```
 
 **문제 32:** 대량 가격 조정: 특정 벤더('Widget Corp')의 모든 상품 가격을 현재 가격의 10% 할인가로 수정하세요.
 
 ```sql
-
+update products set price = price * 0.9 where vendor = 'Widget Corp';
 ```
 
 **문제 33:** 평점이 낮은 상품 일괄 처리: 평균 평점이 2.0 미만인 상품들을 조회하여 삭제하세요. (서브쿼리 활용)
 
 ```sql
-
+delete from products
+where id in 
+      (select id from 
+                     (select id 
+                      from reviews r 
+                      group by id 
+                      having avg(rating) < 2.0
+      )as target_ids
+);
 ```
 
 **문제 34:** 조건부 데이터 이동: 'Gizmo' 카테고리의 모든 상품 정보를 가상의 `archived_products` 테이블(구조는 동일)로 복사한 후 원본 테이블에서 삭제하세요.
 
 ```sql
-
+start transaction;
+create table archived_products as select * from products where category = 'Gizmo';
+delete from products where category = 'Gizmo';
+commit;
 ```
 
 **문제 35:** 실적 기반 데이터 업데이트: 2018년에 가장 많이 주문된 상품의 카테고리를 'Best Seller'로 변경하세요.
 
 ```sql
-
+update products p 
+set category = 'Best Seller' 
+where p.id = (
+    select product_id 
+    from orders 
+    group by product_id 
+    order by sum(quantity) 
+    desc limit 1
+);
 ```
 
 **문제 36:** 비정상 데이터 수정: `orders` 테이블에서 `subtotal` + `tax`가 `total`과 일치하지 않는 데이터들을 찾아 `total`을 올바르게 수정하세요.
 
 ```sql
-
+update orders set total = subtotal + tax where total != subtotal + tax;
 ```
 
 **문제 37:** 사용자 가입 경로 보정: `email`이 'google.com'으로 끝나지만 `source`가 'Google'이 아닌 경우를 찾아 'Google'로 업데이트하세요.
 
 ```sql
-
+update users set source = 'Google' where email like "%google.com" and source != "Google";
 ```
 
 **문제 38:** 리뷰 블라인드 처리: 욕설이나 부적절한 단어(가상으로 'badword'라 가정)가 포함된 리뷰 본문을 '****'로 수정하세요.
 
 ```sql
-
+update reviews set body = '****' where body like '%badword%';
+update reviews set body = replace(body, 'badword', '****') where body like '&badword&';
 ```
 
 **문제 39:** 상품 상세 정보 일괄 보강: `products` 테이블의 `ean` 번호가 없는 상품들에 대해 'NO-EAN'이라는 기본값을 채워 넣으세요.
 
 ```sql
-
+update products set ean = 'NO-EAN' where ean is null and ean = '';
 ```
 
 **문제 40:** 주소 데이터 표준화: `state` 컬럼이 'California'인 경우를 모두 'CA'로 일괄 수정하세요.
 
 ```sql
-
+update users set state = 'CA' where trim(state) = 'California';
 ```
 
 **문제 41:** 대량 주문 사용자 등급 업그레이드: 총 주문 금액이 1000달러 이상인 사용자들의 이름 앞에 '[VIP]'를 붙이세요. (CONCAT 활용)
