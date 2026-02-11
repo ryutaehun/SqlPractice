@@ -332,59 +332,65 @@ update users set state = 'CA' where trim(state) = 'California';
 **문제 41:** 대량 주문 사용자 등급 업그레이드: 총 주문 금액이 1000달러 이상인 사용자들의 이름 앞에 '[VIP]'를 붙이세요. (CONCAT 활용)
 
 ```sql
-
+update users set name = concat("[VIP]", name) where id in (select user_id from orders group by user_id having sum(total) >= 1000);
 ```
 
 **문제 42:** 오타 수정: 벤더 이름 중 'Senger-Stamm'을 'Senger-Stamm Corp'으로 변경하세요.
 
 ```sql
-
+update products set vendor = 'Senger-Stamm Corp' where vendor = 'Senger-Stamm';
 ```
 
 **문제 43:** 리뷰 작성자 이름 동기화: `users` 테이블에서 이름이 변경된 경우, `reviews` 테이블의 `reviewer` 이름도 함께 업데이트하는 쿼리를 작성하세요.
 
 ```sql
-
+start transaction;
+update users set name = 'RyuTaehun' where name = 'Taehun';
+update reviews set reviewer = 'RyuTaehun' where reviewer = 'Taehun';
+commit;
 ```
 
 **문제 44:** 장기 재고 상품 할인: 등록된 지 3년이 지났고 재고가 1000개 이상인 상품들의 가격을 20% 할인하세요.
 
 ```sql
-
+update products set price = price * 1.2 where quantity >= 1000 and created_at <= (now() - interval 3 year);
 ```
 
 **문제 45:** 빈 데이터 삭제: `users` 테이블에서 `address`, `city`, `state` 정보가 모두 비어 있는 유령 계정을 삭제하세요.
 
 ```sql
-
+delete from users where address is Null and city is Null and state is Null;
 ```
 
 **문제 46:** 카테고리 통합: 'Gadget' 카테고리와 'Gizmo' 카테고리를 'Electronic' 카테고리로 통합하세요.
 
 ```sql
-
+update products set category = 'Electronic' where category = 'Gadget' or category = 'Gizmo';
 ```
 
 **문제 47:** 주문 취소 시 재고 복구: 특정 주문(예: order_id = 100)을 삭제하면서, 해당 주문에 포함되었던 상품의 재고를 다시 증가시키세요.
 
 ```sql
-
+start transaction;
+update products p join orders o on p.id = o.product_id set quantity = quantity + o.quantity where o.id = 100;
+delete from orders where id = 100;
+commit;
 ```
 
 **문제 48:** 대문자 변환: `users` 테이블의 모든 이메일 주소를 소문자로 일괄 변환하세요. (LOWER 함수 활용)
 
 ```sql
-
+update users set email = lower(email);
 ```
 
 **문제 49:** 불필요한 공백 제거: `products` 테이블의 `title` 컬럼 앞뒤에 붙은 공백을 제거하세요. (TRIM 함수 활용)
 
 ```sql
-
+update products set title = trim(title);
 ```
 
 **문제 50:** 종합 CRUD 시나리오: 1년 이상 활동이 없고 리뷰도 남기지 않은 사용자를 찾아 삭제하고, 삭제된 사용자 수만큼 로그 테이블(가상)에 기록하는 일련의 과정을 고려해 보세요.
 
 ```sql
-
+보류..
 ```
