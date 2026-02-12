@@ -12,151 +12,151 @@
 **문제 1:** `products` 테이블에서 모든 상품의 이름(`title`)과 가격(`price`) 컬럼을 조회하세요.
 
 ```sql
-
+select title, price from products;
 ```
 
 **문제 2:** `products` 테이블에서 상품 카테고리(`category`) 목록을 중복 없이 조회하세요.
 
 ```sql
-
+select distinct category from products;
 ```
 
 **문제 3:** `products` 테이블에서 가격(`price`)이 50달러 이상인 상품의 이름(`title`)과 가격(`price`)을 조회하세요.
 
 ```sql
-
+select title, price from products where price >= 50;
 ```
 
 **문제 4:** `products` 테이블에서 'Gizmo' 카테고리에 속하면서 평점(`rating`)이 4.5 이상인 상품의 모든 정보를 조회하세요.
 
 ```sql
-
+select * from products where category = 'Gizmo' and rating >= 4.5;
 ```
 
 **문제 5:** `users` 테이블에서 이메일 주소(`email`)가 'yahoo.com'으로 끝나는 사용자의 이름(`name`)과 이메일(`email`)을 조회하세요.
 
 ```sql
-
+select name, email from users where email like('%yahoo.com');
 ```
 
 **문제 6:** `orders` 테이블에서 2018년에 생성된(`created_at` 컬럼 기준) 주문 건의 모든 정보를 조회하세요.
 
 ```sql
-
+select * from orders where created_at >= '2018-01-01' and created_at <= '2018-12-31';
 ```
 
 **문제 7:** `products` 테이블에서 상품을 가격(`price`)이 높은 순서대로 정렬하여 상위 5개 상품의 모든 정보를 조회하세요.
 
 ```sql
-
+select * from products order by price desc limit 5;
 ```
 
 **문제 8:** `users` 테이블에서 주(`state`)가 'CA', 'NY', 'TX'인 사용자들의 이름(`name`)과 주(`state`)를 조회하세요.
 
 ```sql
-
+select name, state from users where state in ('CA', 'NY', 'TX');
 ```
 
 **문제 9:** `products` 테이블에서 평점(`rating`)이 0인 상품의 이름(`title`)과 카테고리(`category`)를 조회하세요.
 
 ```sql
-
+select title, category from products where rating = 0;
 ```
 
 **문제 10:** `products` 테이블에서 상품 이름(`title`)에 'Small'이 포함된 상품의 이름(`title`)과 가격(`price`)을 조회하세요.
 
 ```sql
-
+select title, price from products where title like('%Small%');
 ```
 
 **문제 11:** `products` 테이블에서 벤더(`vendor`)가 'Senger-Stamm'인 상품의 모든 정보를 조회하세요.
 
 ```sql
-
+select * from products where vendor = 'Senger-Stamm';
 ```
 
 **문제 12:** `products` 테이블에서 상품 가격(`price`)이 20달러에서 40달러 사이인 상품의 이름(`title`)과 가격(`price`)을 조회하세요.
 
 ```sql
-
+select title, price from products where price between 20 and 40;
 ```
 
 **문제 13:** `products` 테이블에서 'Gadget' 카테고리가 아닌 상품들 중 가격(`price`)이 100달러 이상인 상품의 모든 정보를 조회하세요.
 
 ```sql
-
+select * from products where category != 'Gadget' and price >= 100;
 ```
 
 **문제 14:** `users` 테이블에서 도시(`city`)가 'Portland'인 사용자의 이름(`name`)과 주소(`address`)를 조회하세요.
 
 ```sql
-
+select name, address from users where city = 'Portland';
 ```
 
 **문제 15:** `users` 테이블에서 '2019-01-01' 이후에 생성된(`created_at` 컬럼 기준) 사용자들 중 가입 경로(`source`)가 'Google'인 사용자의 모든 정보를 조회하세요.
 
 ```sql
-
+select * from users where created_at >= '2019-01-01' and source = 'Google';
 ```
 
 **문제 16:** `products` 테이블에서 상품 이름(`title`)이 'Aerodynamic'으로 시작하는 상품의 이름(`title`)과 가격(`price`)을 조회하세요.
 
 ```sql
-
+select title, price from products where title like('Aerodynamic%');
 ```
 
 **문제 17:** `reviews` 테이블에서 평점(`rating`)이 1점인 리뷰의 본문(`body`)을 조회하세요.
 
 ```sql
-
+select body from reviews where rating = 1;
 ```
 
 **문제 18:** `orders` 테이블에서 할인(`discount`)이 0보다 큰(적용된) 주문의 총 건수를 조회하세요.
 
 ```sql
-
+select count(*) from orders where discount > 0;
 ```
 
 **문제 19:** `users` 테이블에서 우편번호(`zip`)가 '9'로 시작하는 사용자들의 이름(`name`)과 우편번호(`zip`)를 조회하세요.
 
 ```sql
-
+select name, zip from users where zip like('9%');
 ```
 
 **문제 20:** `products` 테이블에서 상품을 카테고리(`category`)별로 오름차순 정렬하고, 같은 카테고리 내에서는 가격(`price`)이 낮은 순(오름차순)으로 정렬하여 모든 정보를 조회하세요.
 
 ```sql
-
+select * from products order by category, price;
 ```
 
 **문제 21:** `products` 테이블에서 평점(`rating`)이 4.0 이상 4.8 이하인 상품의 이름(`title`)과 평점(`rating`)을 조회하세요.
 
 ```sql
-
+select title, rating from products where rating between 4.0 and 4.8;
 ```
 
 **문제 22:** `users` 테이블에서 가입 경로(`source`)가 'Twitter' 또는 'Facebook'인 사용자의 이름(`name`)과 가입 경로(`source`)를 조회하세요.
 
 ```sql
-
+select name, source from users where source in ('Twitter', 'Facebook');
 ```
 
 **문제 23:** `products` 테이블에서 수량(`quantity`)이 5000개가 아닌 상품의 모든 정보를 조회하세요.
 
 ```sql
-
+select * from products where quantity != 5000;
 ```
 
 **문제 24:** `users` 테이블에서 주(`state`) 컬럼 값이 비어있지 않은(NULL이 아니고 빈 문자열이 아닌) 사용자의 모든 정보를 조회하세요.
 
 ```sql
-
+select * from users where state is not null and state != '';
 ```
 
 **문제 25:** `orders` 테이블에서 세금(`tax`)이 10달러를 초과하는 주문의 ID(`id`)와 세금(`tax`)을 조회하세요.
 
 ```sql
-
+select id, tax from orders where tax > 10;
 ```
 
 ## 2. 집계 및 그룹화 (Aggregate Functions, GROUP BY, HAVING)
