@@ -164,121 +164,121 @@ select id, tax from orders where tax > 10;
 **문제 26:** `products` 테이블에 등록된 전체 상품의 개수는 몇 개입니까?
 
 ```sql
-
+select count(*) from products;
 ```
 
 **문제 27:** `products` 테이블에서 각 카테고리(`category`)별 상품 개수를 조회하세요.
 
 ```sql
-
+select category, count(*) from products group by category;
 ```
 
 **문제 28:** `products` 테이블에서 카테고리(`category`)별 평균 상품 가격(`price`)을 조회하되, 평균 가격이 높은 순으로 정렬하세요.
 
 ```sql
-
+select category, avg(price) avg_price from products group by category order by avg_price desc;
 ```
 
 **문제 29:** `orders` 테이블에서 모든 주문의 총 매출액(`total`의 합계)을 구하세요.
 
 ```sql
-
+select sum(total) total_sum from orders;
 ```
 
 **문제 30:** `orders` 테이블에서 각 사용자(`user_id`)별로 주문한 총 횟수를 조회하세요.
 
 ```sql
-
+select user_id, count(*) order_count from orders group by user_id;
 ```
 
 **문제 31:** `reviews` 테이블을 사용하여 각 상품(`product_id`)별 평균 평점(`rating`)을 조회하세요.
 
 ```sql
-
+select product_id, avg(rating) avg_rating from reviews group by product_id;
 ```
 
 **문제 32:** `users` 테이블에서 각 주(`state`)별 사용자 수를 조회하되, 사용자 수가 50명 이상인 주만 출력하세요.
 
 ```sql
-
+select state, count(*) user_count from users group by state having user_count >= 50; 
 ```
 
 **문제 33:** `orders` 테이블에서 2019년 1월 한 달 동안 발생한 총 주문 금액(`total`의 합계)을 구하세요.
 
 ```sql
-
+select sum(total) order_total from orders where created_At between '2019-01-01' and '2019-01-31';
 ```
 
 **문제 34:** `products` 테이블에서 가장 비싼 상품의 가격(`price`)과 가장 저렴한 상품의 가격(`price`)을 조회하세요.
 
 ```sql
-
+select max(price) max_price, min(price) min_price from products; 
 ```
 
 **문제 35:** `users` 테이블에서 가입 경로(`source`)별 사용자 수를 조회하세요.
 
 ```sql
-
+select source, count(*) user_count from users group by source;
 ```
 
 **문제 36:** `products` 테이블에서 각 카테고리(`category`)별로 가장 높은 평점(`rating`)을 조회하세요.
 
 ```sql
-
+select category, max(rating) max_rating from products group by category;
 ```
 
 **문제 37:** `products` 테이블에서 벤더(`vendor`)별로 공급하는 상품의 총 개수를 조회하세요.
 
 ```sql
-
+select vendor, count(*) products_count from products group by vendor;
 ```
 
 **문제 38:** `orders` 테이블에서 각 상품(`product_id`)별 총 판매 수량(`quantity`)의 합계를 구하세요.
 
 ```sql
-
+select product_id, sum(quantity) quantity_sum from orders group by product_id;
 ```
 
 **문제 39:** `users` 테이블에서 각 년도별로 가입한 사용자 수를 조회하세요. (`created_at` 컬럼 활용)
 
 ```sql
-
+select year(created_at), count(*) user_count from users group by year(created_at);
 ```
 
 **문제 40:** `products` 테이블에서 평균 가격(`price`)이 50달러 이상인 카테고리(`category`)와 그 평균 가격을 조회하세요.
 
 ```sql
-
+select category, avg(price) avg_price from products group by category having avg_price >= 50;
 ```
 
 **문제 41:** `reviews` 테이블에서 각 평점(`rating`, 1~5)별 리뷰 개수를 조회하세요.
 
 ```sql
-
+select rating, count(*) review_count from reviews group by rating order by rating asc;
 ```
 
 **문제 42:** `users` 테이블에서 각 도시(`city`)별 사용자 수를 조회하되, 사용자 수가 많은 도시부터 내림차순으로 정렬하세요.
 
 ```sql
-
+select city, count(*) user_count from users group by city order by user_count desc;
 ```
 
 **문제 43:** `orders` 테이블에서 주문 금액(`total`)의 평균보다 높은 주문들의 총 개수를 조회하세요. (서브쿼리 활용)
 
 ```sql
-
+select count(*) from orders where total > (select avg(total) from orders);
 ```
 
 **문제 44:** `products` 테이블에서 각 카테고리(`category`)별 상품 가격(`price`)의 표준편차를 구하세요. (MySQL의 `STDDEV` 함수 사용)
 
 ```sql
-
+select category, STDDEV(price) from products group by category;
 ```
 
 **문제 45:** `orders` 테이블에서 중복을 제외한 주문 상품(`product_id`)의 총 개수를 조회하세요.
 
 ```sql
-
+select count(distinct product_id) from orders;
 ```
 
 **문제 46:** `orders` 테이블에서 2018년에 주문을 한 번이라도 한 사용자(`user_id`)의 총 수를 구하세요.
