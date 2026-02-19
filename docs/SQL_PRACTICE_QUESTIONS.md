@@ -284,31 +284,31 @@ select count(distinct product_id) from orders;
 **문제 46:** `orders` 테이블에서 2018년에 주문을 한 번이라도 한 사용자(`user_id`)의 총 수를 구하세요.
 
 ```sql
-
+select count(distinct user_id) from orders where created_at between '2018-01-01' and '2018-12-31';
 ```
 
 **문제 47:** `products` 테이블에서 벤더(`vendor`)별 평균 평점(`rating`)을 구하되, 평균 평점이 4.0 이상인 벤더만 조회하세요.
 
 ```sql
-
+select vendor, avg(rating) as avg_rating from products group by vendor having avg_rating >= 4.0;
 ```
 
 **문제 48:** `orders` 테이블에서 각 사용자(`user_id`)별 총 주문 금액(`total`)의 합계를 구하되, 합계 금액이 500달러 이상인 사용자만 조회하세요.
 
 ```sql
-
+select user_id, sum(total) as sum_total from orders group by user_id having sum_total >= 500; 
 ```
 
 **문제 49:** `reviews` 테이블에서 2018년 이후에 작성된 리뷰들 중, 상품(`product_id`)별 리뷰 개수를 조회하세요.
 
 ```sql
-
+select product_id, count(*) as '리뷰개수' from reviews where created_at >= '2018-01-01' group by product_id;
 ```
 
 **문제 50:** `products` 테이블에서 상품 카테고리(`category`)가 'Gizmo'인 상품들의 총 재고 수량(`quantity`) 합계를 구하세요.
 
 ```sql
-
+select sum(quantity) as sum_quantity from products where category = 'Gizmo';
 ```
 
 ## 3. 조인 및 서브쿼리 (JOIN, Subqueries)
@@ -316,121 +316,149 @@ select count(distinct product_id) from orders;
 **문제 51:** `orders` 테이블과 `users` 테이블을 조인하여, 각 주문의 ID(`id`)와 주문한 사용자의 이름(`name`)을 조회하세요.
 
 ```sql
-
+select o.id, u.name from orders o join users u on o.user_id = u.id;
 ```
 
 **문제 52:** `orders`, `users`, `products` 테이블을 조인하여, 'Gizmo' 카테고리 상품을 주문한 사용자들의 이메일(`email`)을 중복 없이 조회하세요.
 
 ```sql
-
+select distinct u.email from orders o join users u on o.user_id = u.id join products p on o.product_id = p.id where p.category = 'Gizmo';
 ```
 
 **문제 53:** `products` 테이블과 `reviews` 테이블을 조인하여, 각 상품별 이름(`title`)과 해당 상품에 달린 리뷰 본문(`body`)을 조회하세요. (리뷰가 없는 상품은 제외)
 
 ```sql
-
+select p.title, r.body from products p join reviews r on p.id = r.product_id;
 ```
 
 **문제 54:** `products` 테이블과 `reviews` 테이블을 조인하여, 평균 평점(`rating`)이 4.0 이상인 상품들의 이름(`title`)과 평균 평점을 조회하세요.
 
 ```sql
-
+select avg(r.rating) as avg_rating, p.title from products p 
+join reviews r on p.id = r.product_id 
+group by p.title having avg_rating >= 4.0;
 ```
 
 **문제 55:** `products` 테이블에서 `orders` 테이블에 존재하지 않는(한 번도 주문된 적이 없는) 상품의 이름(`title`)을 조회하세요.
 
 ```sql
-
+select distinct p.title from products p left join orders o on p.id = o.product_id where o.product_id is null;
 ```
 
 **문제 56:** `products` 테이블과 `orders` 테이블을 조인하여, 가장 많이 주문된 상품 상위 3개의 이름(`title`)과 주문 횟수를 조회하세요.
 
 ```sql
-
+select p.title, count(product_id) as orders_count from products p join orders o on p.id = o.product_id group by p.title order by orders_count desc limit 3;
 ```
 
 **문제 57:** `users` 테이블과 `orders` 테이블을 `LEFT JOIN`하여, 각 사용자의 이름(`name`)과 그 사용자가 마지막으로 주문한 날짜(`created_at`)를 조회하세요.
 
 ```sql
-
+select u.name, max(o.created_at) as latest_order from users u left join orders o on u.id = o.user_id group by u.name;
 ```
 
 **문제 58:** `orders` 테이블에서 주문 금액(`total`)이 전체 평균 주문 금액보다 큰 주문들의 ID(`id`)와 금액(`total`)을 조회하세요.
 
 ```sql
-
+select id, total from orders where total > (select avg(total) from orders);
 ```
 
 **문제 59:** `products` 테이블에서 각 카테고리(`category`)별로 가장 비싼 상품의 카테고리, 이름(`title`), 가격(`price`)을 조회하세요. (서브쿼리 활용)
 
 ```sql
-
+select category, title, price from products where (category, price) in (select category, max(price) from products group by category);
 ```
 
 **문제 60:** `orders` 테이블과 `users` 테이블을 조인하여, 'TX' 주(`state`)에 거주하는 사용자들이 주문한 총 주문 금액(`total`)의 합계를 구하세요.
 
 ```sql
-
+select sum(total) as 합계 from orders o join users u on o.user_id = u.id where state = 'TX';
 ```
 
 **문제 61:** `reviews` 테이블과 `products` 테이블을 조인하여, 각 리뷰별로 리뷰 작성자(`reviewer`)의 이름과 해당 상품의 이름(`title`)을 함께 조회하세요.
 
 ```sql
-
+select reviewer, title from reviews r join products p on r.product_id = p.id;
 ```
 
 **문제 62:** `orders` 테이블과 `products` 테이블을 조인하여, 주문한 상품의 가격(`price`)이 100달러 이상인 주문들의 주문 ID(`id`)와 상품 이름(`title`)을 조회하세요.
 
 ```sql
-
+select o.id, p.title from orders o join products p on o.product_id = p.id where p.price >= 100; 
 ```
 
 **문제 63:** `products`, `orders`, `users` 테이블을 조인하여, 'Affiliate' 경로로 가입한 사용자(`source`)들이 주문한 상품들의 카테고리(`category`)를 중복 없이 조회하세요.
 
 ```sql
-
+select distinct category from products p join orders o on p.id = o.product_id join users u on o.user_id = u.id where u.source = 'Affiliate';
 ```
 
 **문제 64:** `users`, `orders`, `products` 테이블을 조인하여, 각 주(`state`)별로 가장 많이 주문된 상품 카테고리(`category`)와 그 주문 건수를 조회하세요.
 
 ```sql
-
+SELECT state, category, order_count
+FROM (
+         SELECT
+             u.state,
+             p.category,
+             COUNT(*) AS order_count,
+             RANK() OVER (PARTITION BY u.state ORDER BY COUNT(*) DESC) as rnk
+         FROM users u
+                  JOIN orders o ON u.id = o.user_id
+                  JOIN products p ON o.product_id = p.id
+         GROUP BY u.state, p.category
+     ) t
+WHERE t.rnk = 1;
+    // 이건 다시해봐야 함
 ```
 
 **문제 65:** `products` 테이블과 `reviews` 테이블을 조인하여, 리뷰가 5개 이상 달린 상품의 이름(`title`)과 리뷰 개수를 조회하세요.
 
 ```sql
-
+select p.title, count(*) from products p join reviews r on p.id = r.product_id group by p.title having count(*) >= 5;
 ```
 
 **문제 66:** `orders` 테이블과 `users` 테이블을 조인하여, 2018년에 가입한 사용자들이 2019년에 주문한 총 금액(`total`)의 합계를 구하세요.
 
 ```sql
-
+select sum(o.total) as '2019년 총 금액' from orders o join users u on o.user_id = u.id 
+where u.created_at between '2018-01-01' and '2018-12-31'
+and o.created_at between '2019-01-01' and '2019-12-31';
 ```
 
 **문제 67:** `products` 테이블에서 상품 평점(`rating`)이 해당 카테고리(`category`)의 평균 평점보다 높은 상품들의 이름(`title`)과 평점(`rating`)을 조회하세요.
 
 ```sql
-
+select p1.title, p1.rating from products p1 where rating > (select avg(rating) from products p2 where p1.category = p2.category);
 ```
 
 **문제 68:** `users` 테이블에서 주문 내역(`orders`)이 없는 사용자들의 이메일(`email`)을 조회하세요. (`NOT EXISTS` 활용)
 
 ```sql
-
+select u.email from users u where not in (select 1 from orders o where u.id = o.user_id);
 ```
 
 **문제 69:** `products` 테이블과 `orders` 테이블을 조인하여, 각 벤더(`vendor`)별로 가장 많이 판매된(주문 횟수 기준) 상품의 이름(`title`)을 조회하세요.
 
 ```sql
-
+SELECT vendor, title, sale_count
+FROM (
+         SELECT
+             p.vendor,
+             p.title,
+             COUNT(*) as sale_count,
+             RANK() OVER (PARTITION BY p.vendor ORDER BY COUNT(*) DESC) as ranking
+         FROM products p
+                  JOIN orders o ON p.id = o.product_id
+         GROUP BY p.vendor, p.title
+     ) t
+WHERE ranking = 1;
 ```
 
 **문제 70:** `products` 테이블과 `reviews` 테이블을 조인하여, 사용자 'Hudson Borer'가 작성한 리뷰가 있는 상품의 이름(`title`)을 조회하세요.
 
 ```sql
-
+select p.title from products p join reviews r on p.id = r.product_id where r.reviewer = 'Hudson Borer';
 ```
 
 **문제 71:** `users` 테이블에서 'Gizmo' 카테고리 상품을 주문하지 않은 사용자의 ID(`id`)와 이름(`name`)을 조회하세요.
