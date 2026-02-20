@@ -464,31 +464,48 @@ select p.title from products p join reviews r on p.id = r.product_id where r.rev
 **문제 71:** `users` 테이블에서 'Gizmo' 카테고리 상품을 주문하지 않은 사용자의 ID(`id`)와 이름(`name`)을 조회하세요.
 
 ```sql
-
+select u.id, u.name from users u where u.id not in 
+(select o.user_id from orders o where o.product_id in (select p.id from products p where category = 'Gizmo'));
+-- 아래 방식이 더 효율적
+SELECT u.id, u.name
+FROM users u
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM orders o
+             JOIN products p ON o.product_id = p.id
+    WHERE o.user_id = u.id AND p.category = 'Gizmo'
+);
 ```
 
 **문제 72:** `products` 테이블과 `orders` 테이블을 조인하여, 상품 이름(`title`)과 해당 상품을 주문한 사용자 수를 조회하세요. (주문되지 않은 상품도 0으로 표시)
 
 ```sql
-
+select p1.title, count(*) as order_count from products p left join orders o on p.id = o.product_id group by p.title;
 ```
 
 **문제 73:** `users`, `orders`, `products` 테이블을 조인하여, 각 상품 카테고리(`category`)별로 주문 합계(`total`)가 가장 큰 사용자의 이름을 조회하세요.
 
 ```sql
-
+select category, name from (select p.category, u.name, sum(o.total) order_sum,
+    rank() over (partition by p.category order by sum(o.total) desc) as rnk
+    from users u join orders o on u.id = o.user_id
+    join products p on p.id = o.product_id
+    group by p.category, u.name
+)t
+where rnk = 1;
+                                                                              
 ```
 
 **문제 74:** `users` 테이블과 `orders` 테이블을 조인하여, 할인율(`discount`)이 0.5 이상인 주문을 한 사용자들이 거주하는 도시(`city`) 목록을 중복 없이 조회하세요.
 
 ```sql
-
+select distinct u.city from users u join orders o on u.id = o.user_id where o.discount >= 0.5;
 ```
 
 **문제 75:** `products` 테이블과 `reviews` 테이블을 조인하여, 리뷰 본문(`body`)에 'love'라는 단어가 포함된 리뷰를 받은 상품의 이름(`title`)을 조회하세요.
 
 ```sql
-
+select distinct p.title from products p join reviews r on p.id = r.product_id where body like('%love%');
 ```
 
 ## 4. 데이터 변환 및 조건문 (CASE, DATE_FORMAT 등)
@@ -496,31 +513,46 @@ select p.title from products p join reviews r on p.id = r.product_id where r.rev
 **문제 76:** `products` 테이블에서 가격(`price`)이 100달러를 초과하면 '고가', 50달러에서 100달러 사이면 '중가', 50달러 미만이면 '저가'로 분류하여 상품 이름(`title`)과 가격, 분류(`price_range`)를 조회하세요.
 
 ```sql
-
+select title, 
+    case
+        when price > 100 then '고가'
+        when price between 50 and 100 then '중가'
+        when price < 50 then '저가'
+    end as price_range
+from products;
 ```
 
 **문제 77:** `users` 테이블에서 이메일 주소(`email`)의 도메인(예: gmail.com, yahoo.com)만 추출하여, 각 도메인별 사용자 수를 조회하세요.
 
 ```sql
-
+select substring_index(email, '@', -1) as domain, count(*) as user_count from users group by domain;
 ```
 
 **문제 78:** `orders` 테이블에서 주문 날짜(`created_at`)를 'YYYY-MM' 형식으로 변환하여, 월별 주문 건수를 조회하세요.
 
 ```sql
-
+select date_format(created_at, '%Y-%m') as '월', count(*) as '월별 주문 건수' from orders group by date_format(created_at, '%Y-%m');
 ```
 
 **문제 79:** `products` 테이블에서 수량(`quantity`)이 100개 이하이면 '재고 부족', 아니면 '정상'으로 표시하여 상품 이름(`title`)과 상태를 조회하세요.
 
 ```sql
-
+select title,
+    case
+        when quantity <= 100 then '재고 부족'
+        else '정상'
+    end as '상태'
+from products
 ```
 
 **문제 80:** `users` 테이블의 각 사용자별로 `orders` 테이블에 주문 내역이 있으면 '구매 고객', 없으면 '일반 고객'으로 분류하여 이름(`name`)과 함께 조회하세요.
 
 ```sql
-
+select u.name, case
+    when count(o.id) > 0 then '구매 고객'
+    else '일반 고객'
+end as user_type
+from users u left join orders o on u.id = o.user_id group by u.id, u.name;
 ```
 
 **문제 81:** `orders` 테이블에서 주문 합계(`total`)를 소수점 첫째 자리에서 반올림하여 주문 ID(`id`)와 함께 조회하세요.
