@@ -558,31 +558,31 @@ from users u left join orders o on u.id = o.user_id group by u.id, u.name;
 **문제 81:** `orders` 테이블에서 주문 합계(`total`)를 소수점 첫째 자리에서 반올림하여 주문 ID(`id`)와 함께 조회하세요.
 
 ```sql
-
+select id, round(sum(total)) as "총합" from orders group by id;
 ```
 
 **문제 82:** `users` 테이블에서 가입 날짜(`created_at`)의 요일별 가입자 수를 조회하세요. (MySQL의 `DAYNAME` 함수 사용)
 
 ```sql
-
+select dayname(created_at) as 요일, count(*) from users group by dayname(created_at);
 ```
 
 **문제 83:** `reviews` 테이블에서 리뷰 본문(`body`)의 길이를 구하고, 본문 길이가 100자 이상인 리뷰만 조회하세요.
 
 ```sql
-
+select * from reviews where length(body) >= 100;
 ```
 
 **문제 84:** `products` 테이블에서 상품 평점(`rating`)의 소수점 이하를 버리고 정수부만 추출하여 이름(`title`)과 함께 조회하세요. (MySQL의 `FLOOR` 함수 사용)
 
 ```sql
-
+select title, floor(rating) from products;
 ```
 
 **문제 85:** `users` 테이블의 이름(`name`) 컬럼 값을 첫 번째 공백을 기준으로 성(`first_name`)과 이름(`last_name`)으로 분리하여 조회하세요.
 
 ```sql
-
+select substring_index(name, ' ', 1) as 성 ,substring_index(name, ' ', 2) as 이름 from users;
 ```
 
 ## 5. 종합 실습 및 심화 쿼리 (Total 100 Questions)
@@ -590,37 +590,47 @@ from users u left join orders o on u.id = o.user_id group by u.id, u.name;
 **문제 86:** `users` 테이블과 `orders` 테이블을 조인하여, 2018년에 가장 많은 금액(`total`)을 주문한 상위 5명의 사용자 이름과 총 주문 금액을 조회하세요.
 
 ```sql
-
+SELECT
+    u.name AS 사용자이름,
+    SUM(o.total) AS 총주문금액
+FROM users u
+JOIN orders o ON u.id = o.user_id
+WHERE o.created_at >= '2018-01-01'
+  AND o.created_at <  '2019-01-01'
+GROUP BY u.id, u.name
+ORDER BY 총주문금액 DESC
+    LIMIT 5;
 ```
 
 **문제 87:** `products` 테이블에서 각 카테고리(`category`)별로 상품 개수, 평균 가격, 최대 가격, 최소 가격을 한 번에 조회하세요.
 
 ```sql
-
+select category, count(*) 상품개수, avg(price) 평균가격, max(price) 최대가격, min(price) 최소가격 from products group by category; 
 ```
 
 **문제 88:** `products` 테이블에서 평점(`rating`)이 4.5 이상인 상품들 중, `reviews` 테이블에 리뷰가 하나도 등록되지 않은 상품의 모든 정보를 조회하세요.
 
 ```sql
-
+select * from products p where p.rating >= 4.5 and not exists(select 1 from reviews r where r.product_id = p.id);
 ```
 
 **문제 89:** `orders`, `users`, `products` 테이블을 조인하여, 각 주문 건에 대해 '주문 ID, 사용자 이름, 상품 이름, 주문 합계 금액(`total`)을 조회하세요.
 
 ```sql
-
+select o.id as 주문아이디, u.name as 사용자이름, p.name as 상품이름, sum(o.total) as 주문합계 
+from orders o join users u on o.user_id = u.id join products p on o.product_id = p.id;
 ```
 
 **문제 90:** `orders` 테이블에서 총 주문 금액(`total`의 합계)이 가장 컸던 날짜(연-월-일)와 그날의 매출액 합계를 구하세요.
 
 ```sql
-
+select sum(total) as 총주문금액, date(created_at) as 날짜 from orders group by 날짜 order by 총주문금액 desc limit 1;
 ```
 
 **문제 91:** `orders` 테이블에서 각 사용자의 주문 건 중, 해당 사용자의 평균 주문 금액보다 더 큰 금액(`total`)의 주문 내역(ID, 사용자 ID, 금액)을 조회하세요.
 
 ```sql
-
+select * from orders where total > (select avg(total) from orders);
 ```
 
 **문제 92:** `users`, `orders`, `products`, `reviews` 테이블을 조인하여, 'CA' 주(`state`) 사용자들이 가장 높은 평균 평점(`rating`)을 준 상위 3개 벤더(`vendor`)의 이름과 평균 평점을 조회하세요.
