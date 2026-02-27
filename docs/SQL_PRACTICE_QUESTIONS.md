@@ -630,61 +630,64 @@ select sum(total) as 총주문금액, date(created_at) as 날짜 from orders gro
 **문제 91:** `orders` 테이블에서 각 사용자의 주문 건 중, 해당 사용자의 평균 주문 금액보다 더 큰 금액(`total`)의 주문 내역(ID, 사용자 ID, 금액)을 조회하세요.
 
 ```sql
-select * from orders where total > (select avg(total) from orders);
+select id, user_id, total from orders where total > (select avg(total) from orders);
 ```
 
 **문제 92:** `users`, `orders`, `products`, `reviews` 테이블을 조인하여, 'CA' 주(`state`) 사용자들이 가장 높은 평균 평점(`rating`)을 준 상위 3개 벤더(`vendor`)의 이름과 평균 평점을 조회하세요.
 
 ```sql
-
+select p.vendor, avg(p.rating) as 평점 from users u join orders o on u.id = o.user_id join products p on o.product_id = p.id join reviews r on p.id = r.product_id
+where u.state = 'CA' group by p.vendor order by 평점 desc limit 3;
 ```
 
 **문제 93:** `orders` 테이블에서 2018년과 2019년의 연도별 총 매출액(`total`의 합계)을 비교하여 조회하세요.
 
 ```sql
-
+select year(created_at) as year, sum(total) as total_sales from orders where year(created_at) in (2018,2019) group by year(created_at) order by year;
 ```
 
 **문제 94:** `orders` 테이블과 `products` 테이블을 조인하여, 각 상품 카테고리(`category`)별 매출 비중(해당 카테고리 매출 합계 / 전체 매출 합계 * 100)을 구하세요.
 
 ```sql
-
+select p.category, sum(o.total) as category_sales, round(sum(o.total) / (select sum(total) from orders) * 100, 2) as sales_ratio_percent
+from orders o join products p on o.product_id = p.id group by p.category;
 ```
 
 **문제 95:** `users` 테이블과 `orders` 테이블을 조인하여, 자신의 가입일(`created_at`)로부터 1년 이내에 주문을 한 이력이 있는 사용자의 총 수를 구하세요.
 
 ```sql
-
+select count(distinct u.id) from users u join orders o on u.id = o.user_id where o.created_at >= u.created_at and o.created_at < date_add(u.created_at, interval 1 year);
 ```
 
 **문제 96:** `products` 테이블과 `reviews` 테이블을 사용하여, 리뷰가 하나라도 달린 상품 중 평균 평점(`rating`)이 3점 미만인 상품의 공급업체(`vendor`) 이름을 중복 없이 조회하세요.
 
 ```sql
-
+select distinct p.vendor from products p join reviews r on p.id = r.product_id group by p.id, p.vendor having avg(p.rating) < 3;
 ```
 
 **문제 97:** `users` 테이블과 `orders` 테이블을 조인하여, 사용자의 가입 경로(`source`)별 평균 주문 금액(`total`)을 구하고 평균 금액이 높은 순으로 정렬하세요.
 
 ```sql
-
+select source, avg(total) as 평균주문금액 from users u join orders o on u.id = o.user_id group by u.source order by 평균주문금액 desc;
 ```
 
 **문제 98:** `orders` 테이블에서 동일한 사용자가 동일한 상품을 2번 이상 주문한 경우의 사용자 ID(`user_id`)와 상품 ID(`product_id`), 그리고 주문 횟수를 조회하세요.
 
 ```sql
-
+select user_id, product_id, count(*) as order_count from orders group by user_id, product_id having count(*) >= 2;
 ```
 
 **문제 99:** `products` 테이블에서 가격(`price`)이 가장 높은 상품의 이름(`title`)과, 해당 상품이 속한 카테고리의 평균 가격을 함께 조회하세요.
 
 ```sql
-
+select p.title, (select avg(price) from products where category = p.category) as 평균가격 from products p order by price desc limit 1;
 ```
 
 **문제 100:** `orders` 테이블에서 전체 기간 동안 매달 주문을 한 '충성 고객'의 ID(`user_id`)를 조회하세요.
 
 ```sql
-
+select user_id from orders group by user_id 
+                           having count(distinct date_format(created_at, '%Y-%m')) = (select count(distinct date_format(created_at, '%Y-%m')) from orders);
 ```
 
 ## 6. 인덱스 및 검색 성능 최적화 (INDEX)
